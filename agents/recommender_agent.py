@@ -11,7 +11,7 @@ class RecommenderAgent:
         self.llm_manager = LanguageModelManager(provider=provider)
         self.llm = self.llm_manager.get_model(model_tier="json")
         
-    def predict(self, system_prompt: str, session_items: list, retrieved_knowledge: str, past_errors: str = "") -> list:
+    def predict(self, system_prompt: str, session_items: str, candidate_set: str, retrieved_knowledge: str, past_errors: str = "") -> list:
         """
         predict next 20 items.
         
@@ -23,20 +23,32 @@ class RecommenderAgent:
         """
         
         human_template = """
-        This is a movie recommendation task. You are an expert movie recommender system. Your task is to analyze the user's current session history, the retrieved knowledge from the Knowledge Graph, and any past errors to predict the next 20 movies that the user is most likely to watch.
+        This is a movie recommendation task. You are an expert movie recommender system. Your task is to analyze the user's current session history, the retrieved knowledge from the Knowledge Graph, and any past errors to rerank the provided Candidate Set.
+        
         Here are the details you should consider:
         
-        1. User interactions (Session):
+        1. User interactions (Session history):
         {session_items}
         
-        2. Knowledge from Knowledge Graph (Context):
+        2. Candidate Set (YOU MUST SELECT AND RERANK EXACTLY FROM THESE 20 MOVIES):
+        {candidate_set}
+        
+        3. Knowledge from Knowledge Graph (Context):
         {retrieved_knowledge}
         
-        3. Experiences / Past mistakes should be avoided (Past Errors):
+        4. Experiences / Past mistakes should be avoided (Past Errors):
         {past_errors}
-        Based on the instructions from System Prompt and the information above, suggest the next 20 correct movies.
-        REQUIRED: Return JSON format with unique structure (without any other text):
-        {{"recommendations": ["name movie", "name movie 2", ..., "name movie 20"]}}
+        
+        Based on the instructions from the System Prompt, suggest the next 20 correct movies.
+        
+        CRITICAL RULES:
+        - DO NOT hallucinate. Do NOT suggest ANY movie that is not explicitly listed in the Candidate Set above.
+        - You MUST return all 20 movies from the candidate set, ordered by relevance.
+        - Return strictly in JSON format with the following structure (do not add any markdown formatting or outside text):
+        {{
+            "reasoning": "Write a short step-by-step analysis of the user intent and how you rank the candidates.",
+            "recommendations": ["movie name 1", "movie name 2", ..., "movie name 20"]
+        }}
         """
         
         prompt = ChatPromptTemplate.from_messages([
@@ -47,12 +59,12 @@ class RecommenderAgent:
         chain = prompt | self.llm | StrOutputParser()
         
         try:
-            session_str = " -> ".join(session_items)
             errors_str = past_errors if past_errors.strip() else "There is no historical error information for this session."
             
             raw_response = chain.invoke({
                 "system_prompt": system_prompt,
-                "session_items": session_str,
+                "session_items": session_items,
+                "candidate_set": candidate_set, 
                 "retrieved_knowledge": retrieved_knowledge,
                 "past_errors": errors_str
             })
