@@ -1,11 +1,13 @@
 import json
 import os
+import re
 from tqdm import tqdm
 from agents.recommender_agent import RecommenderAgent
 from agents.optimizer_agent import OptimizerAgent
 from core.metrics import evaluate_batch
 from core.memory import TrajectoryBuffer
 from core.error_retriever import ErrorMemoryBank
+from core.metrics import evaluate_batch, get_rank
 
 def load_jsonl_batches(filepath, batch_size):
     batch = []
@@ -65,16 +67,24 @@ def train(
         failed_cases = []
 
         for item in tqdm(batch, desc="Recommender predicting"):
-            session_items = item.get("session", [])
-            ground_truth = item.get("ground_truth", "")
+            input_str = item.get("input", "")
+            ground_truth = item.get("target", "")
             knowledge = item.get("retrieved_knowledge", "")
+
+            parts = input_str.split('\nCandidate Set:')
+            session_str = parts[0].replace('Current session interactions:', '').strip()
+            candidate_str = parts[1].strip() if len(parts) > 1 else ""
+
+            # Trích xuất dạng list để phục vụ Error Bank
+            session_items = re.findall(r'\d+\."([^"]+)"', session_str)
 
             # Retrive similar pass errors from Error Bank.
             past_errors = error_bank.retrieve_similar_errors(session_items, top_k=2)
 
             preds = recommender.predict(
                 system_prompt=current_prompt,
-                session_items=session_items,
+                session_items=session_str,     
+                candidate_set=candidate_str,
                 retrieved_knowledge=knowledge,
                 past_errors=past_errors
             )
@@ -82,12 +92,16 @@ def train(
             predictions_list.append(preds)
             ground_truths_list.append(ground_truth)
 
-            preds_lower = [p.lower() for p in preds]
-            if ground_truth.lower() not in preds_lower:
+            ACCEPTABLE_RANK = 8
+
+            rank = get_rank(preds, ground_truth)
+
+            if rank > ACCEPTABLE_RANK:
                 failed_cases.append({
                     "session_raw": session_items,
                     "target_raw": ground_truth,
-                    "predictions": preds[:10]
+                    "predictions": preds[:10],
+                    "actual_rank": rank
                 })
 
         # Evaluate batch performance
@@ -133,4 +147,4 @@ def train(
         print(f"Best Metrics: {best_record['metrics']}")
 
 if __name__ == "__main__":
-    train(batch_size=5, max_batches=10, provider="timely")
+    train(batch_size=5, max_batches=10, provider="timelygpt")
