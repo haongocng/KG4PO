@@ -1,27 +1,32 @@
 import numpy as np
 import pandas as pd
+import re
 
 def normalize_item_name(item_name: str) -> str:
     if not isinstance(item_name, str):
         item_name = str(item_name)
     
     cleaned = item_name.strip().lower()
-    cleaned = cleaned.replace(" ", "").replace("&amp", "&").replace("&reg;", "®")
+    cleaned = cleaned.replace('"', '').replace("'", "")
+    cleaned = re.sub(r'^\d+[\.\)\-]?\s*', '', cleaned)
+    cleaned = re.sub(r'^movie:\s*', '', cleaned)
+    cleaned = cleaned.replace(" ", "")
+    cleaned = cleaned.replace("&amp;", "&").replace("&amp", "&").replace("&reg;", "®")
     
     return cleaned
 
 def get_rank(predictions: list, ground_truth: str) -> int:
-    gt_normalized = ground_truth.strip().lower()
-    # preds_normalized = [str(p).strip().lower() for p in predictions]
-
-    # if gt_normalized in preds_normalized:
-    #     return preds_normalized.index(gt_normalized) + 1 
-    # else:
-    #     return 9999  
+    if not predictions:
+        return 999
+        
+    gt_normalized = normalize_item_name(ground_truth)
+    
     for idx, pred in enumerate(predictions):
         pred_normalized = normalize_item_name(pred)
         if gt_normalized == pred_normalized:
             return idx + 1
+            
+    print(f"[DEBUG MISS] GT: '{gt_normalized}' | LLM response: '{predictions}'")
     
     return 999
 
