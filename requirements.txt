@@ -2,3 +2,5 @@ langchain
 langchain-openai 
 python-dotenv
 rank-bm25
+tqdm
+pandas
