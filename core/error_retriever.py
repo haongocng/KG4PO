@@ -58,10 +58,10 @@ class ErrorMemoryBank:
         doc_scores = self.bm25.get_scores(tokenized_query)
 
         # Sort the errors by descending BM25 score
-        scored_errors = sorted(enumerate(self.errors), key=lambda x: doc_scores[x[1]], reverse=True)
+        scored_errors = sorted(range(len(self.errors)), key=lambda i: doc_scores[i], reverse=True)
         
         # Filter to get the top K errors with scores > 0
-        top_errors = [self.errors[idx] for idx, score in scored_errors[:top_k] if score > 0]
+        top_errors = [self.errors[idx] for idx in scored_errors[:top_k] if doc_scores[idx] > 0]
 
         # Fallback: if no similar errors found, return the latest errors
         if not top_errors:
