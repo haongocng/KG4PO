@@ -1,0 +1,103 @@
+# ============================================================
+# KGAT Knowledge Retrieve — Configuration
+# ============================================================
+
+# ----------------------------------------------------------
+# Data paths
+# ----------------------------------------------------------
+data:
+  session_path: "data//raw//bundle//train_bundle.json"         # train.json or test.json
+  info_path:    "data/raw/bundle/info_bundle.json"   # product info file
+  output_path:  "data/processed/bundle/train.context.jsonl"
+
+  # Intermediate cache paths (set to null to skip caching)
+  graph_cache:      "data/processed/bundle/graph.pkl"
+  embedding_cache:  "data/processed/bundle/embeddings.pkl"
+
+# ----------------------------------------------------------
+# Graph building
+# ----------------------------------------------------------
+graph:
+  # Sliding window size for co-occurrence edges
+  # None = connect all items in session (full session node)
+  # Recommended: 5 for long sessions, null for short sessions
+  co_occur_window_size: 5
+
+  min_session_length: 1
+  max_session_length: 50
+
+  # Whether to create description nodes from product info
+  include_description: true
+
+  # Whether to create keyword nodes from product info
+  include_keywords: true
+
+# ----------------------------------------------------------
+# Embedding
+# ----------------------------------------------------------
+embedding:
+  # Any sentence-transformers compatible model name or local path
+  model_name: "all-MiniLM-L6-v2"
+
+  # Set to "cuda" to use GPU (recommended for RTX 5090)
+  device: "cuda"
+
+  # Number of texts encoded per forward pass
+  batch_size: 256
+
+  # Prepend semantic role prefix to each node text
+  # e.g. "Title: Aliens", "Category: Military Sci-Fi"
+  use_type_prefix: true
+
+  # L2-normalise embeddings (recommended for cosine attention)
+  normalize: true
+
+# ----------------------------------------------------------
+# Attention propagation
+# ----------------------------------------------------------
+propagation:
+  # Number of propagation layers L  (paper recommends 3)
+  num_layers: 3
+
+  # Aggregator: "bi_interaction" | "gcn" | "graphsage"
+  aggregator: "bi_interaction"
+
+  # Output dimension per layer (null = keep input dim)
+  hidden_dim: null
+
+  # Dropout rate applied to aggregated vectors [0, 1)
+  dropout: 0.1
+
+  # Softmax temperature for attention scorer (lower = sharper)
+  temperature: 1.0
+
+# ----------------------------------------------------------
+# Top-K retrieval
+# ----------------------------------------------------------
+retrieval:
+  k_categories:    6     # Max category nodes per item
+  k_items:         3     # Max co-occurring item nodes per item
+  k_descriptions:  1     # Max description nodes per item
+  k_keywords:      3     # Max keyword nodes per item
+  k_inferred_items: 3     # Max inferred item nodes per item (graph inference)
+
+  # Layer decay factor for aggregating attention across layers
+  # 1.0 = no decay, 0.9 = prefer shallower layers
+  layer_decay: 0.9
+
+  # Exclude the focal item itself from neighbour results
+  exclude_self: true
+
+# ----------------------------------------------------------
+# Pipeline behaviour
+# ----------------------------------------------------------
+pipeline:
+  # If true, load graph/embeddings from cache when available
+  use_cache: false
+
+  # Log progress every N sessions (0 = no progress logging)
+  log_every: 100
+
+  # Number of parallel workers for batch processing
+  # 1 = single-threaded (safe default)
+  num_workers: 1
