@@ -3,13 +3,16 @@ import json
 from rank_bm25 import BM25Okapi
 
 class ErrorMemoryBank:
-    def __init__(self, file_path="data/ml_100k/error_bank.json"):
+    def __init__(self, file_path="data/games/error_bank.json", reset=True):
         """
         Store and retrieve prediction errors with lessons learned using BM25
         """
         self.file_path = file_path
         self.errors = []
         self.bm25 = None
+        if reset and os.path.exists(self.file_path):
+            os.remove(self.file_path)
+
         self._load()
         self._build_bm25()
 
