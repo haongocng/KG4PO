@@ -52,13 +52,13 @@ class OptimizerAgent:
         - The new prompt must remain general and reusable.
         - Avoid overfitting to the specific examples.
 
-        # REFINED STRATEGY FOR LESSON LEARNED:
+        REFINED STRATEGY FOR LESSON LEARNED:
         A "lesson learned" is NOT general advice. It must be a SPECIFIC, REUSABLE HEURISTIC for ranking decisions that helps the model avoid repeating a mistake.
 
         A good lesson must follow this structure:
         [Pattern Detected] -> [Failure Cause] -> [Trigger Signal] -> [Actionable Ranking Rule].
 
-        # STRICT REQUIREMENTS:
+        STRICT REQUIREMENTS:
         - The lesson MUST be concise, atomic, and structured.
         - Avoid storytelling or long narrative examples.
         - The lesson MUST define a concrete ranking action (e.g., prioritize, downrank, filter, boost).
@@ -71,14 +71,14 @@ class OptimizerAgent:
         {{
             "thought_process": "Explanation of the diagnosis and improvement strategy.",
             "new_system_prompt": "The complete improved system prompt.",
-                "lesson_learned": {
+                "lesson_learned": {{
                 "pattern": "Short name of failure pattern",
                 "signal": "Observable condition in session history",
                 "failure_cause": "Why the model made the wrong ranking decision",
                 "rule": "Specific ranking action using candidate set and KG signals",
                 "applicability": "When this rule should be reused",
                 "priority": "low | medium | high"
-            }
+            }}
         }}
         """
 
