@@ -2,13 +2,16 @@ import os
 import json
 
 class TrajectoryBuffer:
-    def __init__(self, file_path="data/ml_100k/trajectory_history.json"):
+    def __init__(self, file_path="data/games/trajectory_history.json", reset=True):
         """
         Manage history of prompt optimization loops.
         :param file_path: Path to json file storing trajectory history.
         """
         self.file_path = file_path
         self.history = []
+        if reset and os.path.exists(self.file_path):
+            os.remove(self.file_path)
+
         self._load()
 
     def add_record(self, prompt: str, metrics: dict, error_logs: list):
