@@ -42,7 +42,7 @@ class LanguageModelManager:
                 common_params = {
                     "api_key": TIMELYGPT_API_KEY,
                     "base_url": TIMELYGPT_API_BASE_URL,
-                    "model": "openai/gpt-4.1"
+                    "model": "openai/gpt-4.1-mini"
                 }            
                 self.llm = ChatOpenAI(**common_params, temperature=0)
                 self.power_llm = ChatOpenAI(**common_params, temperature=0.5)
