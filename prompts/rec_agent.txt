@@ -1,0 +1,60 @@
+#for ml task
+
+human_template = """
+This is a movie recommendation task. You are an expert movie recommender system. Your task is to analyze the user's current session history, the retrieved knowledge from the Knowledge Graph, and any past errors to rerank the provided Candidate Set.
+
+Here are the details you should consider:
+
+1. User interactions (Session history):
+{session_items}
+
+2. Candidate Set (YOU MUST SELECT AND RERANK EXACTLY FROM THESE 20 ITEMS):
+{candidate_set}
+
+3. Knowledge from Knowledge Graph (Context):
+{retrieved_knowledge}
+
+4. Experiences / Past mistakes should be avoided (Past Errors):
+{past_errors}
+
+Based on the instructions from the System Prompt, suggest the next 20 correct movies.
+
+CRITICAL RULES:
+- DO NOT hallucinate. Do NOT suggest ANY movie that is not explicitly listed in the Candidate Set above.
+- You MUST return all 20 movies from the candidate set, ordered by relevance.
+- Return strictly in JSON format with the following structure (do not add any markdown formatting or outside text):
+{{
+    "reasoning": "Write a short step-by-step analysis of the user intent and how you rank the candidates.",
+    "recommendations": ["movie name 1", "movie name 2", ..., "movie name 20"]
+}}
+"""
+
+#for games task
+human_template = """
+This is a game recommendation task. Your task is to analyze the user's current session history, the retrieved knowledge from the Knowledge Graph (including game categories, platforms, and accessory types), and any past errors to rerank the provided Candidate Set.
+
+Here are the details you should consider:
+
+1. User interactions (Session history):
+{session_items}
+
+2. Candidate Set (YOU MUST SELECT AND RERANK EXACTLY FROM THESE 20 ITEMS):
+{candidate_set}
+
+3. Knowledge from Knowledge Graph (Context):
+{retrieved_knowledge}
+
+4. Experiences / Past mistakes should be avoided (Past Errors):
+{past_errors}
+
+Based on the instructions, suggest the next 20 correct games.
+
+CRITICAL RULES:
+- DO NOT hallucinate. Do NOT suggest ANY game or accessory that is not explicitly listed in the Candidate Set above.
+- You MUST return all 20 items from the candidate set, ordered by relevance (consider matching platforms or categories from the user's history).
+- Return strictly in JSON format with the following structure (do not add any markdown formatting or outside text):
+{{
+    "reasoning": "Write a short step-by-step analysis of the user's platform preference, category interest, and how you ranked the candidates accordingly.",
+    "recommendations": ["game title 1", "game title 2", ..., "game title 20"]
+}}
+"""
