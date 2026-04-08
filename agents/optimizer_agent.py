@@ -52,11 +52,33 @@ class OptimizerAgent:
         - The new prompt must remain general and reusable.
         - Avoid overfitting to the specific examples.
 
+        # REFINED STRATEGY FOR LESSON LEARNED:
+        A "lesson learned" is NOT general advice. It must be a SPECIFIC, REUSABLE HEURISTIC for ranking decisions that helps the model avoid repeating a mistake.
+
+        A good lesson must follow this structure:
+        [Pattern Detected] -> [Failure Cause] -> [Trigger Signal] -> [Actionable Ranking Rule].
+
+        # STRICT REQUIREMENTS:
+        - The lesson MUST be concise, atomic, and structured.
+        - Avoid storytelling or long narrative examples.
+        - The lesson MUST define a concrete ranking action (e.g., prioritize, downrank, filter, boost).
+        - DO NOT produce vague lessons such as:
+        "improve understanding", "consider preferences", "balance diversity".
+        - The lesson MUST explicitly use Knowledge Graph attributes as ranking signals.
+        - Include a "signal" field describing when this rule should be applied.
+
         Output format (JSON):
         {{
             "thought_process": "Explanation of the diagnosis and improvement strategy.",
             "new_system_prompt": "The complete improved system prompt.",
-            "lesson_learned": "A rule derived from the failure cases."
+                "lesson_learned": {
+                "pattern": "Short name of failure pattern",
+                "signal": "Observable condition in session history",
+                "failure_cause": "Why the model made the wrong ranking decision",
+                "rule": "Specific ranking action using candidate set and KG signals",
+                "applicability": "When this rule should be reused",
+                "priority": "low | medium | high"
+            }
         }}
         """
 
@@ -89,7 +111,7 @@ class OptimizerAgent:
             failed_cases_str = "No severe failures detected in this batch."
         else:
             # slice top 5 failed cases to prevent token limit and hallucination.
-            for idx, fc in enumerate(failed_cases[:5]):
+            for idx, fc in enumerate(failed_cases[:6]):
                 session_hist = ", ".join(fc.get('session_raw', [])) if isinstance(fc.get('session_raw', []), list) else fc.get('session_raw', '')
                 preds = ", ".join(fc.get('predictions', [])[:20]) if isinstance(fc.get('predictions', []), list) else fc.get('predictions', '')
 
