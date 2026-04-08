@@ -1,0 +1,53 @@
+
+bundle_base = """
+Based on the user's current session interactions, perform the following subtasks sequentially to refine the ranking of the 20 items in the candidate set:
+1. Analyze the session data to uncover clusters of related items, including:
+   * Identifying items from the same brand, manufacturer, or having similar attributes.
+   * Detecting items that are often used together, have complementary functions, or share common characteristics (e.g., organic, specialty, gluten-free).
+   * Recognizing sequences or patterns in how the user interacts with items.
+2. For each cluster of related items, deduce the user's intent behind their interactions, considering:
+   * Brand affinity if multiple items from the same brand are present.
+   * Preference for specific characteristics if multiple items share those attributes.
+   * Interest in a particular use case or recipe if complementary items are identified.
+3. Evaluate the deduced intents and select the one that best aligns with the user's current preferences, taking into account:
+   * The strength and relevance of the relationships and patterns found.
+   * The dominance of certain item characteristics within the session.
+   Ensure the selected intent accurately reflects the user's interests based on their session behavior.
+4. Identify alternative clusters and intents, and assess their relevance to the user's session, ensuring:
+   * A balanced influence of all items in the session.
+   * Avoiding an overemphasis on a single item or cluster.
+   * Reflecting the user's likely interests and preferences.
+5. Based on the selected intent and alternative clusters and intents, rerank the candidate set of 20 items according to their potential for future user interactions, considering:
+   * The relationships and patterns identified.
+   * The relevance of each item to the user's overall session behavior.
+   * The need to balance the influence of all items.
+   Ensure the reranking accurately reflects the user's likely interests and preferences.
+Output the reordered list of the 20 items from the candidate set, with a ranking that reflects the user's likely interests and preferences based on their session behavior.
+"""
+
+bundle_base_v0 = """
+Based on the user's current session interactions, you need to answer the following subtasks step by step:
+1. Discover combinations of items within the session, where the number of combinations can be one or more.
+2. Based on the items within each combination, infer the user's interactive intent within each combination.
+3. Select the intent from the inferred ones that best represents the user's current preferences.
+4. Based on the selected intent, please rerank the 20 items in the candidate set according to the possibility of potential user interactions and show me your ranking results with item index.
+Note that the order of all items in the candidate set must be given, and the items for ranking must be within the candidate set.
+"""
+
+bundle_gpt4 = """
+Based on the user's current session interactions, perform the following steps precisely:
+1. Analyze the session history to infer the user's primary and any emerging preferences, focusing on meaningful combinations of session items and their KG attributes.
+2. Extract the single strongest user intent that best represents current preferences, including accessory or complementary device needs, even if this differs from the majority of session items.
+3. Strictly rerank only the provided set of 20 candidate items; do NOT generate, omit, or introduce any items outside this candidate set. The output must be a complete permutation of all 20 candidates reordered without exception.
+4. Use Knowledge Graph (KG) attributes decisively, focusing on compatibility, device type, brand, dietary or usage context, accessory relationships, and core product category to estimate user interaction likelihood.
+5. Prioritize candidates that comprehensively match the strongest inferred intent, emphasizing core KG attributes such as compatibility, accessory functionality, and usage context.
+6. Downrank candidates with mismatches in core KG attributes like incompatible product category, usage environment, or dietary restrictions.
+7. Avoid boosting candidates based solely on partial, superficial, or brand-only attribute overlap without core compatibility or accessory relevance.
+8. When session history is heterogeneous or diverse, explicitly detect minority or emerging user intents by analyzing KG compatibility, accessory relationships, and usage context attributes.
+9. Prioritize candidates that strongly match these niche or accessory intents, even if they differ from dominant session categories.
+10. In cases of partial matches, use KG compatibility and accessory relationship attributes as decisive signals to boost fully compatible candidates and downrank superficial matches.
+11. Always prioritize complementary or accessory candidates when session history is heterogeneous or dominant categories differ from candidate core KG attributes, using KG compatibility and accessory relationships as decisive signals.
+12. Ensure the reranked list reflects a coherent, consistent user intent inferred from the session and KG attributes, including accessory or complementary device needs.
+13. Confirm the output list includes all candidates reordered strictly from the input candidate set without omission or addition.
+Note: Strictly adhere to reranking only the provided candidate set without omission or generation, and prioritize candidates based on deep KG compatibility and accessory relationships rather than superficial attribute overlap.
+"""

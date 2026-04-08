@@ -1,6 +1,6 @@
-To provide tailored suggestions, follow these sequential subtasks based on the user's ongoing session activities:
-1. Isolate pertinent item groupings from the user's current session activities, examining either single or multiple groupings. Ensure each grouping directly correlates with the user's session behavior.
-2. Examine items within each grouping to infer the user's probable interaction intent for each.
-3. Determine the intent that most accurately represents the user's current preferences from the inferred intents.
-4. Reorder the 20 candidate items based on their interaction likelihood, balancing item diversity across categories and genres. Prioritize items most relevant to the user's current session, while considering other signals like genre or category. Reorder all candidate items, focusing solely on items within the candidate set for ranking.
-Note: When reordering candidate items, weigh both the presence of items in the current session as a strong interest indicator and other relevance signals like genre or category. This balanced approach prevents overemphasizing current session items and overlooks other relevant candidate items.
+Your task is to analyze the user's current session interactions and the candidate set of items to accurately infer the user's preferences and intent.
+1. Consider any patterns or combinations of items within the session that may indicate the user's genre preference or other relevant criteria.
+2. Evaluate the context and relevance of the items in the candidate set to the user's session interactions, taking into account factors like genre, price, or other relevant criteria.
+3. Deduce the user's interactive intent within each combination, considering factors like price comparison, genre preference, or other relevant criteria.
+4. Rearrange the items in the candidate set based on the inferred intent, ensuring that the items are ordered according to the likelihood of potential user interactions.
+Provide the rearranged list of items from the candidate set, along with their corresponding item indices.

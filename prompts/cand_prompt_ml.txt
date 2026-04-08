@@ -1,3 +1,12 @@
+current_prompt = """
+Based on the user's current session interactions, you need to answer the following subtasks step by step:
+1. Discover combinations of items within the session, where the number of combinations can be one or more.
+2. Based on the items within each combination, infer the user's interactive intent within each combination.
+3. Select the intent from the inferred ones that best represents the user's current preferences.
+4. Based on the selected intent, please rerank the 20 items in the candidate set according to the possibility of potential user interactions and show me your ranking results with item index.
+Note that the order of all items in the candidate set must be given, and the items for ranking must be within the candidate set.
+"""
+
 ml_base = """
 Based on the user's current session interactions and any available additional context, such as browsing history, search queries, or demographic information, you need to answer the following subtasks step by step:
 1. Discover combinations of items within the session, where the number of combinations can be one or more, and consider how these combinations might relate to the user's broader interests and preferences.
@@ -25,39 +34,4 @@ Based on the user's current session interactions and any available additional co
 4. Based on the selected intent, rerank the 20 items in the candidate set according to their relevance and potential appeal to the user, considering factors such as genre, tone, and similarity to the items in the current session.
 IMPORTANT: You must strictly rerank only the items within the provided candidate set of exactly 20 movies. Do NOT add, remove, or generate any items outside this candidate set. Your output must present a complete ranking of all 20 candidate items, ordered from most to least relevant, with no omissions or insertions.
 When reranking, carefully balance exploiting the user's current preferences and exploring new but potentially interesting items, ensuring that the final ranked list reflects the best possible ordering of the given candidate set.
-"""
-
-games_base = """
-To provide tailored suggestions, follow these sequential subtasks based on the user's ongoing session activities:
-1. Isolate pertinent item groupings from the user's current session activities, examining either single or multiple groupings. Ensure each grouping directly correlates with the user's session behavior.
-2. Examine items within each grouping to infer the user's probable interaction intent for each.
-3. Determine the intent that most accurately represents the user's current preferences from the inferred intents.
-4. Reorder the 20 candidate items based on their interaction likelihood, balancing item diversity across categories and genres. Prioritize items most relevant to the user's current session, while considering other signals like genre or category. Reorder all candidate items, focusing solely on items within the candidate set for ranking.
-Note: When reordering candidate items, weigh both the presence of items in the current session as a strong interest indicator and other relevance signals like genre or category. This balanced approach prevents overemphasizing current session items and overlooks other relevant candidate items.
-"""
-
-bundle_base = """
-Based on the user's current session interactions, perform the following subtasks sequentially to refine the ranking of the 20 items in the candidate set:
-1. Analyze the session data to uncover clusters of related items, including:
-   * Identifying items from the same brand, manufacturer, or having similar attributes.
-   * Detecting items that are often used together, have complementary functions, or share common characteristics (e.g., organic, specialty, gluten-free).
-   * Recognizing sequences or patterns in how the user interacts with items.
-2. For each cluster of related items, deduce the user's intent behind their interactions, considering:
-   * Brand affinity if multiple items from the same brand are present.
-   * Preference for specific characteristics if multiple items share those attributes.
-   * Interest in a particular use case or recipe if complementary items are identified.
-3. Evaluate the deduced intents and select the one that best aligns with the user's current preferences, taking into account:
-   * The strength and relevance of the relationships and patterns found.
-   * The dominance of certain item characteristics within the session.
-   Ensure the selected intent accurately reflects the user's interests based on their session behavior.
-4. Identify alternative clusters and intents, and assess their relevance to the user's session, ensuring:
-   * A balanced influence of all items in the session.
-   * Avoiding an overemphasis on a single item or cluster.
-   * Reflecting the user's likely interests and preferences.
-5. Based on the selected intent and alternative clusters and intents, rerank the candidate set of 20 items according to their potential for future user interactions, considering:
-   * The relationships and patterns identified.
-   * The relevance of each item to the user's overall session behavior.
-   * The need to balance the influence of all items.
-   Ensure the reranking accurately reflects the user's likely interests and preferences.
-Output the reordered list of the 20 items from the candidate set, with a ranking that reflects the user's likely interests and preferences based on their session behavior.
 """
