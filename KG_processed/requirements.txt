@@ -1,0 +1,16 @@
+# Core ML & embeddings
+sentence-transformers==3.4.1
+torch==2.7.0
+transformers==4.51.3
+numpy==2.2.5
+ 
+# Graph & data
+networkx==3.4.2
+ 
+# Config & utilities
+pyyaml==6.0.2
+tqdm==4.67.1
+ 
+# Serialisation
+pickle5==0.0.12; python_version < "3.8"
+ 
