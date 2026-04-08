@@ -1,0 +1,20 @@
+"""
+KGAT Knowledge Retrieve — Entry Point
+
+Usage examples
+--------------
+# Run with default config.yaml
+python main.py
+
+# Override paths via CLI arguments
+python main.py --config config.yaml \
+               --session data/raw/train.json \
+               --info    data/raw/info_ml100k.json \
+               --output  data/processed/knowledge_retrieve_train.json
+
+# Clear cache and recompute everything
+python main.py --no-cache
+
+# Use a different model
+python main.py --model sentence-transformers/all-mpnet-base-v2
+"""
