@@ -40,12 +40,12 @@ def train(
     
     # 3. Initial system prompt
     current_prompt = """
-    To provide tailored suggestions, follow these sequential subtasks based on the user's ongoing session activities:
-    1. Isolate pertinent item groupings from the user's current session activities, examining either single or multiple groupings. Ensure each grouping directly correlates with the user's session behavior.
-    2. Examine items within each grouping to infer the user's probable interaction intent for each.
-    3. Determine the intent that most accurately represents the user's current preferences from the inferred intents.
-    4. Reorder the 20 candidate items based on their interaction likelihood, balancing item diversity across categories and genres. Prioritize items most relevant to the user's current session, while considering other signals like genre or category. Reorder all candidate items, focusing solely on items within the candidate set for ranking.
-    Note: When reordering candidate items, weigh both the presence of items in the current session as a strong interest indicator and other relevance signals like genre or category. This balanced approach prevents overemphasizing current session items and overlooks other relevant candidate items.
+    Based on the user's current session interactions, you need to answer the following subtasks step by step:
+    1. Discover combinations of items within the session, where the number of combinations can be one or more.
+    2. Based on the items within each combination, infer the user's interactive intent within each combination.
+    3. Select the intent from the inferred ones that best represents the user's current preferences.
+    4. Based on the selected intent, please rerank the 20 items in the candidate set according to the possibility of potential user interactions and show me your ranking results with item index.
+    Note that the order of all items in the candidate set must be given, and the items for ranking must be within the candidate set.
     """
 
     latest_record = trajectory_buffer.get_latest_record()
