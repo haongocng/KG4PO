@@ -23,7 +23,7 @@ def load_jsonl_batches(filepath, batch_size):
         yield batch    
 
 def train(
-    train_file = ".//data//ml_100k//context//train.context.jsonl",
+    train_file = ".//data//games//train.context.jsonl",
     batch_size = 10,
     max_batches = 50,
     provider= "timelygpt"
@@ -31,8 +31,8 @@ def train(
     print("STARTING PROMPT OPTIMIZATION TRAINING ...")
 
     # 1. Initialize core module
-    trajectory_buffer = TrajectoryBuffer()
-    error_bank = ErrorMemoryBank()
+    trajectory_buffer = TrajectoryBuffer(reset=True) 
+    error_bank = ErrorMemoryBank(reset=True)
 
     # 2. Initialize agents
     recommender = RecommenderAgent(provider=provider)
@@ -40,12 +40,12 @@ def train(
     
     # 3. Initial system prompt
     current_prompt = """
-    Based on the user's current session interactions and any available additional context, such as browsing history, search queries, or demographic information, you need to answer the following subtasks step by step:\n\
-    1. Discover combinations of items within the session, where the number of combinations can be one or more, and consider how these combinations might relate to the user's broader interests and preferences.\n\
-    2. For each combination, analyze the items and their attributes (e.g., genre, director, release year) to infer the user's interactive intent within each combination. Consider how the user's interactions with these items might reflect their underlying preferences or interests.\n\
-    3. Select the intent from the inferred ones that best represents the user's current preferences, taking into account the user's behavior and any available additional context. If multiple intents seem plausible, consider the strength of the evidence for each intent and choose the one that is most strongly supported.\n\
-    4. Based on the selected intent, rerank the 20 items in the candidate set according to their relevance and potential appeal to the user, considering factors such as genre, tone, and similarity to the items in the current session. Provide a clear ranking of all 20 items, with the most relevant items first.\n\
-    Note that the order of all items in the candidate set must be given, and the items for ranking must be within the candidate set. When reranking, consider the trade-off between exploiting the user's current preferences and exploring new items that might be of interest.\n
+    To provide tailored suggestions, follow these sequential subtasks based on the user's ongoing session activities:
+    1. Isolate pertinent item groupings from the user's current session activities, examining either single or multiple groupings. Ensure each grouping directly correlates with the user's session behavior.
+    2. Examine items within each grouping to infer the user's probable interaction intent for each.
+    3. Determine the intent that most accurately represents the user's current preferences from the inferred intents.
+    4. Reorder the 20 candidate items based on their interaction likelihood, balancing item diversity across categories and genres. Prioritize items most relevant to the user's current session, while considering other signals like genre or category. Reorder all candidate items, focusing solely on items within the candidate set for ranking.
+    Note: When reordering candidate items, weigh both the presence of items in the current session as a strong interest indicator and other relevance signals like genre or category. This balanced approach prevents overemphasizing current session items and overlooks other relevant candidate items.
     """
 
     latest_record = trajectory_buffer.get_latest_record()
@@ -137,7 +137,7 @@ def train(
             error_logs=failed_cases
         )
     
-    best_record = trajectory_buffer.get_best_record(target_metrics="NDCG@10")
+    best_record = trajectory_buffer.get_best_record(target_metric="NDCG@10")
     if best_record:
         best_prompt_path = "prompts/best_system_prompt.txt"
         os.makedirs(os.path.dirname(best_prompt_path), exist_ok=True)
@@ -147,4 +147,4 @@ def train(
         print(f"Best Metrics: {best_record['metrics']}")
 
 if __name__ == "__main__":
-    train(batch_size=5, max_batches=10, provider="timelygpt")
+    train(batch_size=5, max_batches=None, provider="timelygpt")
